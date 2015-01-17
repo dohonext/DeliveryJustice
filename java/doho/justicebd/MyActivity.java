@@ -213,6 +213,15 @@ public class MyActivity extends Activity implements OnClickListener, LocationLis
     }
 
     @Override
+    public void onBackPressed() {
+        if(webView1.canGoBack()){
+            webView1.goBack();
+        }else{
+            clickHomeOrMenu();
+        }
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.my, menu);
         return true;

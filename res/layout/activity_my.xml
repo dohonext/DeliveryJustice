@@ -132,7 +132,7 @@
                             android:layout_height="165dp"
                             android:layout_marginRight="10dp"
                             android:background="#446CB3"
-                            android:src="@drawable/pizza"
+                            android:src="@drawable/pizzaexercise"
                         />
                         <ImageView
                             android:id="@+id/food4"
