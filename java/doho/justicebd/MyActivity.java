@@ -188,7 +188,7 @@ public class MyActivity extends Activity implements OnClickListener, LocationLis
     }
 
     protected void clickFood(String queryKeyword) {
-        webView1.loadUrl("http://m.map.naver.com/search.nhn?query="+ queryKeyword +"&sm=clk&centerCoord="+latitudeStr+":"+longitudeStr+"&type=SITE_1&siteSort=1");
+        webView1.loadUrl("http://m.map.naver.com/search.nhn?query=" + queryKeyword + "&sm=clk&centerCoord=" + latitudeStr + ":" + longitudeStr + "&type=SITE_1&siteSort=1");
         layoutHome.setVisibility(View.INVISIBLE);
     }
 
@@ -209,6 +209,12 @@ public class MyActivity extends Activity implements OnClickListener, LocationLis
         @Override
         public void onLoadResource(WebView view, String url) {
 
+        }
+
+        @Override
+        public void onPageFinished(WebView view, String url) {
+            //Apply the custom CSS to m.naver.com (removing some unnecessary elements).
+            webView1.loadUrl("javascript:document.getElementsByTagName('html')              [0].innerHTML+='<style>" +"header, form#searchTop, .geolc, .rw, .sc_sort, .scf, footer {display:none !important;}" +"</style>';");
         }
     }
 
