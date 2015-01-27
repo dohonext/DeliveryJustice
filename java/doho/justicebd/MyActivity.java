@@ -3,6 +3,7 @@ package doho.justicebd;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -52,7 +53,7 @@ public class MyActivity extends Activity implements OnClickListener, LocationLis
     private ImageView food8;
 
     // Query fields
-    private String[] queryKeyword = {"치킨배달", "중국집", "피자배달", "족발 보쌈", "도시락배달", "야식배달", "햄버거배달", "한식배달"};
+    private String[] queryKeyword = {"중국집", "치킨배달", "피자배달", "한식배달", "도시락배달", "족발 보쌈", "야식배달"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +83,7 @@ public class MyActivity extends Activity implements OnClickListener, LocationLis
     protected void webViewInit(){
         webView1 = (WebView)findViewById(R.id.webView);
         webView1.getSettings().setJavaScriptEnabled(true);
+        webView1.getSettings().setDomStorageEnabled(true);
         webView1.getSettings().setLayoutAlgorithm(LayoutAlgorithm.NORMAL);
         webView1.setWebViewClient(new MyWebViewClient());
         webView1.loadUrl("");
@@ -159,7 +161,7 @@ public class MyActivity extends Activity implements OnClickListener, LocationLis
                 clickFood(queryKeyword[6]);
                 break;
             case R.id.food8:
-                clickFood(queryKeyword[7]);
+                clickFastFood();
                 break;
             default:
                 break;
@@ -192,6 +194,11 @@ public class MyActivity extends Activity implements OnClickListener, LocationLis
         layoutHome.setVisibility(View.INVISIBLE);
     }
 
+    protected void clickFastFood(){
+        webView1.loadUrl("file:///android_asset/fastfood.html");
+        layoutHome.setVisibility(View.INVISIBLE);
+    }
+
     private class MyWebViewClient extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -213,8 +220,34 @@ public class MyActivity extends Activity implements OnClickListener, LocationLis
 
         @Override
         public void onPageFinished(WebView view, String url) {
-            //Apply the custom CSS to m.naver.com (removing some unnecessary elements).
-            webView1.loadUrl("javascript:document.getElementsByTagName('html')              [0].innerHTML+='<style>" +"header, form#searchTop, .geolc, .rw, .sc_sort, .scf, footer {display:none !important;}" +"</style>';");
+            //Apply the custom CSS to m.naver.com (removing some unnecessary elements). footer, header, form#searchTop, .geolc, .sc_sort, .scf
+            //From the Android Ver.KITKAT, it use Chromium webview. So we need to control it.
+            int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+            if (currentapiVersion >= Build.VERSION_CODES.KITKAT){
+                webView1.loadUrl("javascript:document.getElementsByTagName('html')[0].innerHTML+='<style>" +"footer, header, form#searchTop, .geolc, .sc_sort, .scf {display:none !important;}" +"</style>';");
+            } else{
+                webView1.loadUrl("javascript:" +
+                "try{document.getElementsByClassName('geolc')[0].style.display='none'; } catch(exception){};" +
+                "try{document.getElementsByClassName('sc_sort')[0].style.display='none'; } catch(exception){};" +
+                "try{document.getElementsByClassName('scf')[0].style.display='none'; } catch(exception){};" +
+                "try{document.getElementsByClassName('rw')[0].style.display='none'; } catch(exception){};" +
+                "try{document.getElementById('searchTop')[0].style.display='none'; } catch(exception){}" +
+                "finally{ document.getElementById('header').style.display='none';" +
+                        "document.getElementById('footer').style.display='none';}");
+            }
+//                    "document.getElementById('footer').style.display='none';" +
+//                    "document.getElementById('header').style.display='none';" +
+//                    "document.getElementById('searchTop')[0].style.display='none';" +
+//                    "document.getElementsByClassName('geolc')[0].style.display='none';" +
+//                    "document.getElementsByClassName('sc_sort')[0].style.display='none';");
+
+// TODO : Refactoring
+//                    "var aElements = [ document.getElementById('header'), document.getElementById('footer'), document.getElementById('searchTop'), document.getElementsByClassName('geolc')[0], " +
+//                                     "document.getElementsByClassName('sc_sort')[0], document.getElementsByClassName('scf')[0], document.getElementsByClassName('rw')[0] ];" +
+//                    "var iArrayLength = aElements.length;" +
+//                    "for(var i = 0; i < iArrayLength; i++){" +
+//                        "if(aElements[i]){aElements[i].style.display='none';}" +
+//                    "}");
         }
     }
 
@@ -248,6 +281,20 @@ public class MyActivity extends Activity implements OnClickListener, LocationLis
         latitude = location.getLatitude();
         longitudeStr = String.valueOf(longitude);
         latitudeStr = String.valueOf(latitude);
+    }
+
+    @Override
+    public void onStop() {
+        //Stop using Gps module when the App goes background.
+        super.onStop();
+        locManager.removeUpdates(this);
+    }
+
+    @Override
+    public void onResume() {
+        //Restart using Gps module when the App goes foreground again.
+        super.onResume();
+        gpsInit();
     }
 
     @Override
