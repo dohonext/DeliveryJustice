@@ -32,7 +32,6 @@ public class MyActivity extends Activity implements OnClickListener, LocationLis
     private String longitudeStr;
     private String latitudeStr;
     private Location last;
-    private Location loc;
 
     // WebView fields
     private WebView webView1;
@@ -70,14 +69,22 @@ public class MyActivity extends Activity implements OnClickListener, LocationLis
         locManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
         locManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, this);
-        last = locManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        if (last == null) {
-            last = locManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        try {
+            last = locManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            if (last == null) {
+                last = locManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                if (last == null) {
+                    Toast.makeText(this.getApplicationContext(), "휴대폰 GPS(위치정보)를 활성화 시켜주세요", Toast.LENGTH_LONG).show();
+                    return;
+                }
+            }
+            latitude = last.getLatitude();
+            longitude = last.getLongitude();
+            longitudeStr = String.valueOf(longitude);
+            latitudeStr = String.valueOf(latitude);
+        } catch (Exception e) {
         }
-        latitude = last.getLatitude();
-        longitude = last.getLongitude();
-        longitudeStr = String.valueOf(longitude);
-        latitudeStr = String.valueOf(latitude);
+
     }
 
     protected void webViewInit(){
@@ -174,15 +181,8 @@ public class MyActivity extends Activity implements OnClickListener, LocationLis
     }
 
     protected void clickGps() {
-        loc = locManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        if ( loc == null) {
-            loc = locManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        }
-        Toast.makeText(this.getApplicationContext(),"위치재탐색\n위도:"+loc.getLatitude()+" "+"경도:"+loc.getLongitude(), Toast.LENGTH_LONG).show();
-        longitude = loc.getLongitude();
-        latitude = loc.getLatitude();
-        longitudeStr = String.valueOf(longitude);
-        latitudeStr = String.valueOf(latitude);
+        gpsInit();
+        if(last != null) { Toast.makeText(this.getApplicationContext(),"위치재탐색\n위도:"+last.getLatitude()+" "+"경도:"+last.getLongitude(), Toast.LENGTH_LONG).show(); }
     }
 
     protected void clickAbout() {
