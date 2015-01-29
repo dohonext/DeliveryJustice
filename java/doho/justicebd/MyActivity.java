@@ -223,7 +223,7 @@ public class MyActivity extends Activity implements OnClickListener, LocationLis
         @Override
         public void onPageFinished(WebView view, String url) {
             //Apply the custom CSS to m.naver.com (removing some unnecessary elements). footer, header, form#searchTop, .geolc, .sc_sort, .scf
-            //From the Android Ver.KITKAT, it use Chromium webview. So we need to control it.
+            //From the Android Ver.KITKAT, it uses Chromium webview. Need to control it.
             int currentapiVersion = android.os.Build.VERSION.SDK_INT;
             if (currentapiVersion >= Build.VERSION_CODES.KITKAT){
                 webView1.loadUrl("javascript:document.getElementsByTagName('html')[0].innerHTML+='<style>" +"footer, header, form#searchTop, .geolc, .sc_sort, .scf {display:none !important;}" +"</style>';");
