@@ -187,6 +187,8 @@ public class MyActivity extends Activity implements OnClickListener, LocationLis
 
     protected void clickAbout() {
         // TODO
+        webView1.loadUrl("file:///android_asset/about.html");
+        layoutHome.setVisibility(View.INVISIBLE);
     }
 
     protected void clickFood(String queryKeyword) {
