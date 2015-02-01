@@ -8,16 +8,15 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.content.Context;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.animation.AlphaAnimation;
 import android.webkit.WebSettings.LayoutAlgorithm;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -25,7 +24,7 @@ import android.widget.Toast;
 
 public class MyActivity extends Activity implements OnClickListener, LocationListener {
 
-    // GPS fields
+    // [GPS fields]
     private LocationManager locManager;
     private double longitude;
     private double latitude;
@@ -33,15 +32,14 @@ public class MyActivity extends Activity implements OnClickListener, LocationLis
     private String latitudeStr;
     private Location last;
 
-    // WebView fields
+    // [WebView fields]
     private WebView webView1;
+    private String currentUrl;
 
-    // Layout fields
+    // [Layout fields]
     private LinearLayout layoutHome;
-    private Button home;
-    private Button menu;
-    private Button gps;
-    private Button about;
+    private ImageView home;
+    private ImageView about;
     private ImageView food1;
     private ImageView food2;
     private ImageView food3;
@@ -50,19 +48,32 @@ public class MyActivity extends Activity implements OnClickListener, LocationLis
     private ImageView food6;
     private ImageView food7;
     private ImageView food8;
+    private ImageView splash;
+  //private ImageView gps;
+    private AlphaAnimation alphaAnimation;
 
-    // Query fields
+    // [Query fields]
     private String[] queryKeyword = {"중국집", "치킨배달", "피자배달", "한식배달", "도시락배달", "족발 보쌈", "야식배달"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
-
+        showLogo();
         gpsInit();
         webViewInit();
         layoutInit();
         setEventHandlers();
+    }
+
+    protected void showLogo() {
+        splash = (ImageView)findViewById(R.id.splash);
+        AlphaAnimation aa = new AlphaAnimation(1.0f, 0.0f);
+        aa.setStartOffset(1000);
+        aa.setDuration(1000);
+        aa.setFillAfter(true);
+        splash.startAnimation(aa);
+        splash.setVisibility(View.INVISIBLE);
     }
 
     protected void gpsInit() {
@@ -99,11 +110,8 @@ public class MyActivity extends Activity implements OnClickListener, LocationLis
     protected void layoutInit(){
         layoutHome = (LinearLayout)findViewById(R.id.layout_home);
 
-        home = (Button)findViewById(R.id.home);
-        menu = (Button)findViewById(R.id.menu);
-        gps = (Button)findViewById(R.id.gps);
-        about = (Button)findViewById(R.id.about);
-
+        home = (ImageView)findViewById(R.id.home);
+        about = (ImageView)findViewById(R.id.about);
         food1 = (ImageView)findViewById(R.id.food1);
         food2 = (ImageView)findViewById(R.id.food2);
         food3 = (ImageView)findViewById(R.id.food3);
@@ -112,14 +120,15 @@ public class MyActivity extends Activity implements OnClickListener, LocationLis
         food6 = (ImageView)findViewById(R.id.food6);
         food7 = (ImageView)findViewById(R.id.food7);
         food8 = (ImageView)findViewById(R.id.food8);
+
+        alphaAnimation = new AlphaAnimation(1.0f, 0.0f);
+        alphaAnimation.setDuration(1);
+        alphaAnimation.setStartOffset(700);
     }
 
     protected void setEventHandlers(){
         home.setOnClickListener(this);
-        menu.setOnClickListener(this);
-        gps.setOnClickListener(this);
         about.setOnClickListener(this);
-
         food1.setOnClickListener(this);
         food2.setOnClickListener(this);
         food3.setOnClickListener(this);
@@ -135,13 +144,7 @@ public class MyActivity extends Activity implements OnClickListener, LocationLis
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.home:
-                clickHomeOrMenu();
-                break;
-            case R.id.menu:
-                clickHomeOrMenu();
-                break;
-            case R.id.gps:
-                clickGps();
+                clickHome();
                 break;
             case R.id.about:
                 clickAbout();
@@ -175,24 +178,20 @@ public class MyActivity extends Activity implements OnClickListener, LocationLis
         }
     }
 
-    protected void clickHomeOrMenu(){
-        sleep(300);
+    protected void clickHome(){
+        sleep(200);
         layoutHome.setVisibility(View.VISIBLE);
     }
 
-    protected void clickGps() {
-        gpsInit();
-        if(last != null) { Toast.makeText(this.getApplicationContext(),"위치재탐색\n위도:"+last.getLatitude()+" "+"경도:"+last.getLongitude(), Toast.LENGTH_LONG).show(); }
-    }
-
     protected void clickAbout() {
-        // TODO
         webView1.loadUrl("file:///android_asset/about.html");
         layoutHome.setVisibility(View.INVISIBLE);
     }
 
     protected void clickFood(String queryKeyword) {
+        webView1.clearHistory();
         webView1.loadUrl("http://m.map.naver.com/search.nhn?query=" + queryKeyword + "&sm=clk&centerCoord=" + latitudeStr + ":" + longitudeStr + "&type=SITE_1&siteSort=1");
+        layoutHome.startAnimation(alphaAnimation);
         layoutHome.setVisibility(View.INVISIBLE);
     }
 
@@ -255,11 +254,22 @@ public class MyActivity extends Activity implements OnClickListener, LocationLis
 
     @Override
     public void onBackPressed() {
-        if(webView1.canGoBack()){
-            webView1.goBack();
-        }else{
-            clickHomeOrMenu();
+        if(layoutHome.getVisibility() == View.VISIBLE) {
+            this.finish();
         }
+        currentUrl = webView1.getUrl();
+        if(currentUrl.substring(0, 29).matches("http://m.map.naver.com/search") || currentUrl.substring(0, 21).matches("file:///android_asset")) {
+            clickHome();
+        }else {
+            webView1.goBack();
+        }
+    }
+
+    @Override
+    public void finish() {
+        System.runFinalizersOnExit(true) ;
+        super.finish();
+        android.os.Process.killProcess(android.os.Process.myPid());
     }
 
     @Override
