@@ -191,7 +191,6 @@ public class MyActivity extends Activity implements OnClickListener, LocationLis
     protected void clickFood(String queryKeyword) {
         webView1.clearHistory();
         webView1.loadUrl("http://m.map.naver.com/search.nhn?query=" + queryKeyword + "&sm=clk&centerCoord=" + latitudeStr + ":" + longitudeStr + "&type=SITE_1&siteSort=1");
-        
         layoutHome.startAnimation(alphaAnimation);
         layoutHome.setVisibility(View.INVISIBLE);
     }
@@ -226,7 +225,14 @@ public class MyActivity extends Activity implements OnClickListener, LocationLis
             //From the Android Ver.KITKAT, it uses Chromium webview. Need to control it.
             int currentapiVersion = android.os.Build.VERSION.SDK_INT;
             if (currentapiVersion >= Build.VERSION_CODES.KITKAT){
-                webView1.loadUrl("javascript:document.getElementsByTagName('html')[0].innerHTML+='<style>" +"footer, header, form#searchTop, .geolc, .sc_sort, .scf {display:none !important;}" +"</style>';");
+                webView1.loadUrl("javascript:" +
+                        "try{alert(document.getElementsByClassName('geolc')[0].style.display='none'); } catch(exception){};" +
+                        "try{alert(document.getElementsByClassName('sc_sort')[0].style.display='none'); } catch(exception){};" +
+                        "try{alert(document.getElementsByClassName('scf')[0].style.display='none'); } catch(exception){};" +
+                        "try{alert(document.getElementsByClassName('rw')[0].style.display='none'); } catch(exception){};" +
+                        "try{alert(document.getElementById('searchTop')[0].style.display='none'); } catch(exception){}" +
+                        "finally{ alert(document.getElementById('header').style.display='none');" +
+                        "alert(document.getElementById('footer').style.display='none');}");
             } else{
                 webView1.loadUrl("javascript:" +
                 "try{document.getElementsByClassName('geolc')[0].style.display='none'; } catch(exception){};" +
