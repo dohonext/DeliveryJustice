@@ -191,6 +191,7 @@ public class MyActivity extends Activity implements OnClickListener, LocationLis
     protected void clickFood(String queryKeyword) {
         webView1.clearHistory();
         webView1.loadUrl("http://m.map.naver.com/search.nhn?query=" + queryKeyword + "&sm=clk&centerCoord=" + latitudeStr + ":" + longitudeStr + "&type=SITE_1&siteSort=1");
+        
         layoutHome.startAnimation(alphaAnimation);
         layoutHome.setVisibility(View.INVISIBLE);
     }
