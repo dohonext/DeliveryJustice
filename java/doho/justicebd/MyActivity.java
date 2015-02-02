@@ -49,7 +49,6 @@ public class MyActivity extends Activity implements OnClickListener, LocationLis
     private ImageView food7;
     private ImageView food8;
     private ImageView splash;
-  //private ImageView gps;
     private AlphaAnimation alphaAnimation;
 
     // [Query fields]
@@ -123,7 +122,7 @@ public class MyActivity extends Activity implements OnClickListener, LocationLis
 
         alphaAnimation = new AlphaAnimation(1.0f, 0.0f);
         alphaAnimation.setDuration(1);
-        alphaAnimation.setStartOffset(700);
+        alphaAnimation.setStartOffset(100);
     }
 
     protected void setEventHandlers(){
@@ -233,29 +232,30 @@ public class MyActivity extends Activity implements OnClickListener, LocationLis
                         "try{alert(document.getElementById('searchTop')[0].style.display='none'); } catch(exception){}" +
                         "finally{ alert(document.getElementById('header').style.display='none');" +
                         "alert(document.getElementById('footer').style.display='none');}");
-            } else{
+            } else {
                 webView1.loadUrl("javascript:" +
-                "try{document.getElementsByClassName('geolc')[0].style.display='none'; } catch(exception){};" +
-                "try{document.getElementsByClassName('sc_sort')[0].style.display='none'; } catch(exception){};" +
-                "try{document.getElementsByClassName('scf')[0].style.display='none'; } catch(exception){};" +
-                "try{document.getElementsByClassName('rw')[0].style.display='none'; } catch(exception){};" +
-                "try{document.getElementById('searchTop')[0].style.display='none'; } catch(exception){}" +
-                "finally{ document.getElementById('header').style.display='none';" +
+                        "try{document.getElementsByClassName('geolc')[0].style.display='none'; } catch(exception){};" +
+                        "try{document.getElementsByClassName('sc_sort')[0].style.display='none'; } catch(exception){};" +
+                        "try{document.getElementsByClassName('scf')[0].style.display='none'; } catch(exception){};" +
+                        "try{document.getElementsByClassName('rw')[0].style.display='none'; } catch(exception){};" +
+                        "try{document.getElementById('searchTop')[0].style.display='none'; } catch(exception){}" +
+                        "finally{document.getElementById('header').style.display='none';" +
                         "document.getElementById('footer').style.display='none';}");
             }
+//                webView1.loadUrl("javascript:" +
+//                "try{document.getElementsByClassName('geolc')[0].style.display='none'; } catch(exception){};" +
+//                "try{document.getElementsByClassName('sc_sort')[0].style.display='none'; } catch(exception){};" +
+//                "try{document.getElementsByClassName('scf')[0].style.display='none'; } catch(exception){};" +
+//                "try{document.getElementsByClassName('rw')[0].style.display='none'; } catch(exception){};" +
+//                "try{document.getElementById('searchTop')[0].style.display='none'; } catch(exception){}" +
+//                "finally{ document.getElementById('header').style.display='none';" +
+//                    "document.getElementById('footer').style.display='none';}");
+//
 //                    "document.getElementById('footer').style.display='none';" +
 //                    "document.getElementById('header').style.display='none';" +
 //                    "document.getElementById('searchTop')[0].style.display='none';" +
 //                    "document.getElementsByClassName('geolc')[0].style.display='none';" +
 //                    "document.getElementsByClassName('sc_sort')[0].style.display='none';");
-
-// TODO : Refactoring
-//                    "var aElements = [ document.getElementById('header'), document.getElementById('footer'), document.getElementById('searchTop'), document.getElementsByClassName('geolc')[0], " +
-//                                     "document.getElementsByClassName('sc_sort')[0], document.getElementsByClassName('scf')[0], document.getElementsByClassName('rw')[0] ];" +
-//                    "var iArrayLength = aElements.length;" +
-//                    "for(var i = 0; i < iArrayLength; i++){" +
-//                        "if(aElements[i]){aElements[i].style.display='none';}" +
-//                    "}");
         }
     }
 
