@@ -219,6 +219,12 @@ public class MyActivity extends Activity implements OnClickListener, LocationLis
         }
 
         @Override
+        public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+            webView1.loadUrl("file:///android_asset/noInternet.html");
+            super.onReceivedError(view, errorCode, description, failingUrl);
+        }
+
+        @Override
         public void onPageFinished(WebView view, String url) {
             //Apply the custom CSS to m.naver.com (removing some unnecessary elements). footer, header, form#searchTop, .geolc, .sc_sort, .scf
             //From the Android Ver.KITKAT, it uses Chromium webview. Need to control it.
@@ -271,6 +277,7 @@ public class MyActivity extends Activity implements OnClickListener, LocationLis
             webView1.goBack();
         }
     }
+
 
     @Override
     public void finish() {
